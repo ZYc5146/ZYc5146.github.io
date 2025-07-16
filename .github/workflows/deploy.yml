@@ -1,0 +1,23 @@
+name: Deploy GitHub Pages
+
+# 触发条件：当 main 分支有新提交时自动运行
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 第一步：拉取仓库代码到 Actions 服务器
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 第二步：直接部署根目录内容到 main 分支（无需额外构建步骤）
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          # 指定部署到 main 分支（和你的源分支一致）
+          publish_branch: main
+          # 指定部署根目录的文件（. 表示当前目录，即仓库根目录）
+          publish_dir: ./
