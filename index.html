@@ -82,6 +82,12 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+            .email-wrapper {
+                @apply relative overflow-hidden;
+            }
+            .email-text {
+                @apply inline-block whitespace-nowrap overflow-hidden overflow-ellipsis pr-8;
+            }
         }
     </style>
 </head>
@@ -99,6 +105,7 @@
                     <a href="#social" class="text-dark/70 hover:text-primary transition-custom">社交平台</a>
                     <a href="#contact" class="text-dark/70 hover:text-primary transition-custom">联系我</a>
                     <a href="#about" class="text-dark/70 hover:text-primary transition-custom">关于本站</a>
+                    <a href="#web-recommend" class="text-dark/70 hover:text-primary transition-custom">网页推荐</a>
                 </div>
                 <button class="md:hidden text-dark text-xl" id="menu-toggle">
                     <i class="fa fa-bars"></i>
@@ -110,6 +117,7 @@
                     <a href="#social" class="text-dark/70 hover:text-primary transition-custom py-2">社交平台</a>
                     <a href="#contact" class="text-dark/70 hover:text-primary transition-custom py-2">联系我</a>
                     <a href="#about" class="text-dark/70 hover:text-primary transition-custom py-2">关于本站</a>
+                    <a href="#web-recommend" class="text-dark/70 hover:text-primary transition-custom py-2">网页推荐</a>
                 </div>
             </div>
         </nav>
@@ -202,9 +210,11 @@
                                     常用
                                 </span>
                             </div>
-                            <p class="text-dark/70 mb-4">
-                                yangcheng001.work@zhangyangcheng.xyz
-                            </p>
+                            <div class="email-wrapper">
+                                <p class="email-text text-dark/70 mb-4">
+                                    yangcheng001.work@zhangyangcheng.xyz
+                                </p>
+                            </div>
                             <button class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-custom flex items-center">
                                 <i class="fa fa-copy mr-2"></i>复制邮箱
                             </button>
@@ -253,6 +263,52 @@
             </div>
         </section>
 
+        <!-- 网页推荐 -->
+        <section id="web-recommend" class="mb-20 scroll-mt-24 reveal">
+            <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary mb-10 text-center">
+                <i class="fa fa-globe mr-2"></i>网页推荐
+            </h2>
+            <div class="space-y-8">
+                <!-- 第一个推荐卡片 -->
+                <div class="bg-surface rounded-xl shadow-elevation-1 p-8 card-hover">
+                    <div class="flex flex-col md:flex-row items-start">
+                        <div class="w-16 h-16 rounded-full overflow-hidden mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                            <!-- 替换为你的第一张图片 -->
+                            <img src="oxygennotincluded.wiki.gg.ico" alt="缺氧中文Wiki图标" class="w-full h-full object-cover">
+                        </div>
+                        <div class="w-full">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold text-dark">缺氧中文Wiki</h3>
+                                <a href="https://oxygennotincluded.wiki.gg/zh/" target="_blank" class="text-primary hover:underline">访问</a>
+                            </div>
+                            <p class="text-dark/70 mb-4">
+                                自用的缺氧中文维基，感觉蛮好用的。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第二个推荐卡片 -->
+                <div class="bg-surface rounded-xl shadow-elevation-1 p-8 card-hover">
+                    <div class="flex flex-col md:flex-row items-start">
+                        <div class="w-16 h-16 rounded-full overflow-hidden mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                            <!-- 替换为你的第二张图片 -->
+                            <img src="oni-cn.com.ico" alt="缺氧信息查询图标" class="w-full h-full object-cover">
+                        </div>
+                        <div class="w-full">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold text-dark">缺氧信息查询</h3>
+                                <a href="https://oni-cn.com/entry/home/" target="_blank" class="text-primary hover:underline">访问</a>
+                            </div>
+                            <p class="text-dark/70 mb-4">
+                                含游戏内数据库，且包含汇总功能，方便比较同类型物质的熔沸点等差异。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 关于本站 -->
         <section id="about" class="mb-20 scroll-mt-24 reveal">
             <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary mb-10 text-center">
@@ -274,13 +330,18 @@
                     <div class="md:w-2/3">
                         <p class="text-dark/80 mb-6 leading-relaxed">
                             欢迎访问我的个人主页！这个网站使用了我注册的个人域名 
-                            <a href="http://zhangyangcheng.xyz/" target="_blank" class="text-primary hover:underline">zhangyangcheng.xyz</a>以及GitHub Pages，
+                            <a href="http://zhangyangcheng.xyz/" target="_blank" class="text-primary hover:underline">zhangyangcheng.xyz</a>以及GitHub Pages，代码由豆包生成，
                             旨在为大家提供一个集中了解我的平台。在这里，你可以找到我的社交账号链接，方便关注我的最新动态，
                             也可以通过提供的联系方式与我取得联系。
                         </p>
                         <p class="text-dark/80 leading-relaxed">
                             感谢你的访问！如果你对网站有任何建议或意见，欢迎通过上述联系方式告知我。
                         </p>
+                        <div class="mt-6 pt-6 border-t border-muted-light/50">
+                            <p class="text-dark/60 text-sm">
+                                <i class="fa fa-code text-primary mr-2"></i>本站代码由豆包生成，使用Tailwind CSS构建，并通过GitHub Pages部署
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -298,8 +359,12 @@
                 <a href="#about" class="hover:text-primary transition-custom">
                     <i class="fa fa-info-circle"></i>
                 </a>
+                <a href="#web-recommend" class="hover:text-primary transition-custom">
+                    <i class="fa fa-globe"></i>
+                </a>
             </div>
             <p>&copy; 2025 张阳城. 保留所有权利.</p>
+            <p>本站由豆包生成，使用Tailwind CSS构建，并通过GitHub Pages部署</p>
         </footer>
     </div>
 
@@ -419,4 +484,3 @@
     </script>
 </body>
 </html>
-    
