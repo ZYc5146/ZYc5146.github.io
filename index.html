@@ -122,60 +122,6 @@
             .page-content {
                 display: none; /* 初始隐藏页面内容 */
             }
-            .error-message {
-                color: #F53F3F;
-                padding: 12px 20px;
-                border-radius: 8px;
-                background-color: rgba(245, 63, 63, 0.1);
-                margin: 16px 0;
-                border: 1px solid rgba(245, 63, 63, 0.2);
-                text-align: center;
-                max-width: 300px;
-                transition: all 0.3s ease;
-            }
-            /* 提示框样式 */
-            .alert-box {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: white;
-                padding: 24px;
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-                z-index: 10000;
-                text-align: center;
-                min-width: 280px;
-                max-width: 90%;
-            }
-            .alert-message {
-                font-size: 16px;
-                margin-bottom: 20px;
-                line-height: 1.5;
-            }
-            .alert-button {
-                background-color: #165DFF;
-                color: white;
-                border: none;
-                padding: 8px 20px;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 14px;
-                transition: background-color 0.3s ease;
-            }
-            .alert-button:hover {
-                background-color: #0E4CD1;
-            }
-            .alert-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(2px);
-                z-index: 9999;
-            }
         }
     </style>
 </head>
@@ -454,84 +400,43 @@
     </div>
 
     <script>
-        // 显示提示框函数
-        function showAlert(message) {
-            // 创建遮罩层
-            const overlay = document.createElement('div');
-            overlay.className = 'alert-overlay';
-            
-            // 创建提示框
-            const alertBox = document.createElement('div');
-            alertBox.className = 'alert-box';
-            
-            // 创建提示信息
-            const messageElement = document.createElement('p');
-            messageElement.className = 'alert-message';
-            messageElement.textContent = message;
-            
-            // 创建按钮
-            const button = document.createElement('button');
-            button.className = 'alert-button';
-            button.textContent = '确定';
-            button.addEventListener('click', () => {
-                document.body.removeChild(overlay);
-                document.body.removeChild(alertBox);
-            });
-            
-            // 组装提示框
-            alertBox.appendChild(messageElement);
-            alertBox.appendChild(button);
-            
-            // 添加到页面
-            document.body.appendChild(overlay);
-            document.body.appendChild(alertBox);
-        }
-        
-        // Turnstile验证成功回调函数
-        async function onTurnstileSuccess(token) {
+        // Turnstile验证成功回调函数 - 按要求修改
+        function onTurnstileSuccess(token) {
             // 显示加载动画
             document.getElementById('verification-spinner').classList.remove('hidden');
             
-            try {
-                // 将token发送到Worker进行服务器端验证
-                const response = await fetch("https://for-github-pages.zhangyangcheng1111.workers.dev/", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ "cf-turnstile-response": token })
-                });
-                
-                // 解析服务器响应
-                const data = await response.json();
-                
+            fetch("https://for-github-pages.zhangyangcheng1111.workers.dev", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "cf-turnstile-response": token })
+            })
+            .then(res => res.json())
+            .then(data => {
                 // 隐藏加载动画
                 document.getElementById('verification-spinner').classList.add('hidden');
                 
-                // 根据Worker返回的验证结果处理
-                if (data.success) {
-                    // 验证成功，隐藏验证层并显示页面内容
-                    const overlay = document.getElementById('verification-overlay');
-                    overlay.classList.add('opacity-0');
-                    
+                console.log("服务器验证结果:", data);
+                if(data.success){
+                    // 验证成功，隐藏验证层，显示页面内容
+                    document.getElementById('verification-overlay').classList.add('opacity-0');
                     setTimeout(() => {
-                        overlay.style.display = 'none';
+                        document.getElementById('verification-overlay').style.display = 'none';
                         document.querySelector('.page-content').style.display = 'block';
-                        // 触发元素显示动画
-                        revealElements();
+                        revealElements(); // 保留页面滚动显示动画
                     }, 500);
                 } else {
-                    // 验证失败，显示错误提示
-                    showAlert("验证失败，请刷新页面重试");
+                    // 验证失败，提示用户刷新页面
+                    alert("验证失败，请刷新页面重试。");
                 }
-            } catch (error) {
+            })
+            .catch(error => {
                 // 隐藏加载动画
                 document.getElementById('verification-spinner').classList.add('hidden');
                 
-                // 显示请求错误提示
-                showAlert("服务器验证出现错误，请稍后再试");
-                console.error('验证请求出错:', error);
-            }
+                // 处理请求错误
+                alert("服务器验证出现错误，请稍后再试。");
+                console.error("验证请求错误:", error);
+            });
         }
         
         // 导航菜单切换
