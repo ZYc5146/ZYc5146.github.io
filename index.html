@@ -23,7 +23,8 @@
                         surface: '#FFFFFF',
                         'surface-hover': '#F9FAFB',
                         muted: '#6B7280',
-                        'muted-light': '#E5E7EB'
+                        'muted-light': '#E5E7EB',
+                        danger: '#F53F3F'
                     },
                     fontFamily: {
                         inter: ['Inter', 'system-ui', 'sans-serif'],
@@ -121,22 +122,35 @@
             .page-content {
                 display: none; /* 初始隐藏页面内容 */
             }
+            .error-message {
+                color: #F53F3F;
+                padding: 12px 20px;
+                border-radius: 8px;
+                background-color: rgba(245, 63, 63, 0.1);
+                margin: 16px 0;
+                border: 1px solid rgba(245, 63, 63, 0.2);
+                text-align: center;
+                max-width: 300px;
+                transition: all 0.3s ease;
+            }
         }
     </style>
 </head>
 <body class="bg-gradient-to-br from-light to-white min-h-screen font-inter text-dark overflow-x-hidden">
     <!-- 验证覆盖层 - 页面加载时显示 -->
-    <div id="verification-overlay">
+    <div id="verification-overlay" class="flex flex-col items-center justify-center">
         <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-accent mb-8 text-center">
             <i class="fa fa-shield mr-2"></i>正在验证
         </h2>
-        <!-- 移除了多余的卡片容器，消除白框 -->
-        <div class="w-full max-w-md mb-6">
+        <!-- 使用Tailwind类实现居中显示 -->
+        <div class="w-full max-w-md flex justify-center items-center my-8">
             <div class="cf-turnstile" 
                  data-sitekey="0x4AAAAAABuY6uMjbtgttvLR" 
                  data-theme="light"
                  data-callback="onTurnstileSuccess"></div>
         </div>
+        <!-- 错误信息容器 -->
+        <div id="verification-error" class="error-message hidden"></div>
         <p class="text-muted text-sm">请稍候，正在验证您的身份...</p>
         <div class="verification-loading mt-6 hidden" id="verification-spinner"></div>
     </div>
@@ -400,26 +414,56 @@
 
     <script>
         // Turnstile验证成功回调函数
-        function onTurnstileSuccess(token) {
+        async function onTurnstileSuccess(token) {
+            // 隐藏可能存在的错误信息
+            document.getElementById('verification-error').classList.add('hidden');
+            
             // 显示加载动画
             document.getElementById('verification-spinner').classList.remove('hidden');
             
-            // 模拟验证过程，实际项目中可在此处添加服务器验证
-            setTimeout(() => {
-                // 隐藏验证层
-                const overlay = document.getElementById('verification-overlay');
-                overlay.classList.add('opacity-0');
+            try {
+                // 将token发送到服务器验证
+                const response = await fetch('/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token: token })
+                });
                 
-                // 延迟后显示页面内容
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    document.querySelector('.page-content').style.display = 'block';
-                    // 触发元素显示动画
-                    revealElements();
-                }, 500);
+                // 解析服务器响应
+                const result = await response.json();
                 
-                console.log('验证成功，token:', token);
-            }, 800);
+                // 隐藏加载动画
+                document.getElementById('verification-spinner').classList.add('hidden');
+                
+                // 根据服务器验证结果处理
+                if (response.ok && result.success) {
+                    // 验证成功，隐藏验证层并显示页面内容
+                    const overlay = document.getElementById('verification-overlay');
+                    overlay.classList.add('opacity-0');
+                    
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        document.querySelector('.page-content').style.display = 'block';
+                        // 触发元素显示动画
+                        revealElements();
+                    }, 500);
+                } else {
+                    // 验证失败，显示错误信息
+                    throw new Error(result.message || '服务器验证失败');
+                }
+            } catch (error) {
+                // 隐藏加载动画
+                document.getElementById('verification-spinner').classList.add('hidden');
+                
+                // 显示错误信息
+                const errorElement = document.getElementById('verification-error');
+                errorElement.textContent = '验证失败，请刷新页面重试';
+                errorElement.classList.remove('hidden');
+                
+                console.error('验证过程出错:', error);
+            }
         }
         
         // 导航菜单切换
