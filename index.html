@@ -122,6 +122,14 @@
             .page-content {
                 display: none; /* 初始隐藏页面内容 */
             }
+            /* Turnstile容器居中样式 */
+            .turnstile-container {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px 0;
+            }
         }
     </style>
 </head>
@@ -131,7 +139,8 @@
         <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-accent mb-8 text-center">
             <i class="fa fa-shield mr-2"></i>正在验证
         </h2>
-        <div class="w-full max-w-md flex justify-center items-center my-8">
+        <!-- Turnstile容器 - 使用居中样式 -->
+        <div class="turnstile-container">
             <div class="cf-turnstile" 
                  data-sitekey="0x4AAAAAABuY6uMjbtgttvLR" 
                  data-theme="light"
@@ -401,8 +410,12 @@
     <script>
         // Turnstile验证成功回调函数
         function onTurnstileSuccess(token) {
+            // 打印token到控制台
+            console.log("Turnstile 返回 token:", token);
+            
             document.getElementById('verification-spinner').classList.remove('hidden');
             
+            // 发送token到Worker
             fetch("https://worker.zhangyangcheng.xyz", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -425,8 +438,8 @@
             })
             .catch(error => {
                 document.getElementById('verification-spinner').classList.add('hidden');
+                console.error("Worker 请求错误:", error);
                 alert("服务器验证出现错误，请稍后再试。");
-                console.error("验证请求错误:", error);
             });
         }
 
@@ -489,4 +502,3 @@
     </script>
 </body>
 </html>
-  
