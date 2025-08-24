@@ -7,7 +7,7 @@
     <!-- 添加的Inter字体链接 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome-awesome.min.css" rel="stylesheet">
     <!-- 添加Turnstile脚本 -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script>
@@ -137,7 +137,7 @@
     <!-- 验证覆盖层 -->
     <div id="verification-overlay" class="flex flex-col items-center justify-center">
         <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-accent mb-8 text-center">
-            <i class="fa fa-shield mr-2"></i>正在验证
+            <i class="fa fa-shield mr-2"></i>正在验证，请完成验证码
         </h2>
         <!-- Turnstile容器 - 使用居中样式 -->
         <div class="turnstile-container">
@@ -146,7 +146,7 @@
                  data-theme="light"
                  data-callback="onTurnstileSuccess"></div>
         </div>
-        <p class="text-muted text-sm">请稍候，正在验证您的身份...</p>
+        <p class="text-muted text-sm">请完成验证以继续访问...</p>
         <div class="verification-loading mt-6 hidden" id="verification-spinner"></div>
     </div>
 
@@ -223,7 +223,7 @@
                     </a>
                     
                     <!-- 小红书 -->
-                    <a href="https://www.xiaohongshu.com/user/profile/61a4f838000000001000a0d6" target="_blank" class="group bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center">
+                    <a href="https://www.xiaohongshu.com/user/profile/61a4f8380000000001000a0d6" target="_blank" class="group bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center">
                         <div class="w-16 h-16 bg-[#FF2442] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-[#FF2442]/20">
                             <i class="fa fa-camera text-white text-2xl"></i>
                         </div>
@@ -408,73 +408,100 @@
     </div>
 
     <script>
-        // Turnstile验证成功回调函数
+        // 获取DOM元素并缓存
+        const overlay = document.getElementById('verification-overlay');
+        const pageContent = document.querySelector('.page-content');
+        const spinner = document.getElementById('verification-spinner');
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navbar = document.getElementById('navbar');
+
+        // 错误提示处理
+        const errorHandler = {
+            show: (message) => {
+                let errorDiv = document.getElementById('verification-error');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = 'verification-error';
+                    errorDiv.className = 'text-danger text-sm mt-4';
+                    overlay.appendChild(errorDiv);
+                }
+                errorDiv.textContent = `错误: ${message}`;
+            },
+            hide: () => {
+                const errorDiv = document.getElementById('verification-error');
+                if (errorDiv) errorDiv.remove();
+            }
+        };
+
+        // Turnstile 验证成功回调
         function onTurnstileSuccess(token) {
-            // 打印token到控制台
-            console.log("Turnstile 返回 token:", token);
-            
-            document.getElementById('verification-spinner').classList.remove('hidden');
-            
-            // 发送token到Worker
+            console.log("Turnstile token received:", token);
+
+            // 显示加载状态
+            spinner.classList.remove('hidden');
+            errorHandler.hide();
+
+            // 发送验证请求
             fetch("https://worker.zhangyangcheng.xyz", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "cf-turnstile-response": token })
+                body: JSON.stringify({ token })
             })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('verification-spinner').classList.add('hidden');
-                console.log("服务器验证结果:", data);
-                if(data.success){
-                    document.getElementById('verification-overlay').classList.add('opacity-0');
+            .then(res => res.ok ? res.json() : Promise.reject(`HTTP ${res.status}`))
+            .then(result => {
+                spinner.classList.add('hidden');
+                
+                if (result.success) {
+                    // 验证成功 - 平滑过渡到主内容
+                    overlay.classList.add('opacity-0');
                     setTimeout(() => {
-                        document.getElementById('verification-overlay').style.display = 'none';
-                        document.querySelector('.page-content').style.display = 'block';
+                        overlay.style.display = 'none';
+                        pageContent.style.display = 'block';
                         revealElements();
                     }, 500);
                 } else {
-                    alert("验证失败，请刷新页面重试。");
+                    // 验证失败处理
+                    errorHandler.show(result.error || "验证失败，请重试");
+                    window.turnstile?.reset();
                 }
             })
-            .catch(error => {
-                document.getElementById('verification-spinner').classList.add('hidden');
-                console.error("Worker 请求错误:", error);
-                alert("服务器验证出现错误，请稍后再试。");
+            .catch(err => {
+                console.error("Verification failed:", err);
+                spinner.classList.add('hidden');
+                errorHandler.show("网络错误，请检查连接后重试");
+                window.turnstile?.reset();
             });
         }
 
-        // 导航菜单切换
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
+        // 移动端菜单切换
         menuToggle.addEventListener('click', () => {
-            if (mobileMenu.classList.contains('opacity-0')) {
-                mobileMenu.classList.remove('opacity-0', '-translate-y-full', 'pointer-events-none');
-                mobileMenu.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-                menuToggle.innerHTML = '<i class="fa fa-times"></i>';
-            } else {
-                mobileMenu.classList.add('opacity-0', '-translate-y-full', 'pointer-events-none');
-                mobileMenu.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
-                menuToggle.innerHTML = '<i class="fa fa-bars"></i>';
-            }
+            const isOpen = !mobileMenu.classList.contains('opacity-0');
+            
+            mobileMenu.classList.toggle('opacity-0', isOpen);
+            mobileMenu.classList.toggle('-translate-y-full', isOpen);
+            mobileMenu.classList.toggle('pointer-events-none', isOpen);
+            mobileMenu.classList.toggle('opacity-100', !isOpen);
+            mobileMenu.classList.toggle('translate-y-0', !isOpen);
+            mobileMenu.classList.toggle('pointer-events-auto', !isOpen);
+            
+            menuToggle.innerHTML = isOpen ? 
+                '<i class="fa fa-bars"></i>' : 
+                '<i class="fa fa-times"></i>';
         });
 
         // 滚动显示动画
         function revealElements() {
-            const reveals = document.querySelectorAll('.reveal');
-            for (let i = 0; i < reveals.length; i++) {
-                const windowHeight = window.innerHeight;
-                const elementTop = reveals[i].getBoundingClientRect().top;
-                const elementVisible = 150;
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add('active');
+            document.querySelectorAll('.reveal').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 150) {
+                    el.classList.add('active');
                 }
-            }
+            });
         }
         window.addEventListener('scroll', revealElements);
 
         // 导航栏滚动效果
         window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) {
                 navbar.classList.add('py-2', 'shadow');
                 navbar.classList.remove('py-3');
@@ -484,21 +511,33 @@
             }
         });
 
-        // 邮箱和微信号复制功能
-        document.querySelectorAll('button').forEach(button => {
-            if (button.innerHTML.includes('复制邮箱') || button.innerHTML.includes('复制微信号')) {
-                button.addEventListener('click', function() {
-                    const textToCopy = this.closest('div').querySelector('p').textContent.trim();
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        const originalText = this.innerHTML;
-                        this.innerHTML = '<i class="fa fa-check mr-2"></i>已复制';
-                        setTimeout(() => {
-                            this.innerHTML = originalText;
-                        }, 2000);
-                    });
+        // 复制功能优化
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerHTML.includes('复制')) {
+                btn.addEventListener('click', async () => {
+                    try {
+                        const text = btn.closest('div').querySelector('p').textContent.trim();
+                        await navigator.clipboard.writeText(text);
+                        
+                        const originalHTML = btn.innerHTML;
+                        btn.innerHTML = '<i class="fa fa-check mr-2"></i>已复制';
+                        setTimeout(() => btn.innerHTML = originalHTML, 2000);
+                    } catch (err) {
+                        console.error('复制失败:', err);
+                        errorHandler.show('复制失败，请手动复制');
+                    }
                 });
+            }
+        });
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            // 预检查元素是否存在
+            if (!overlay || !pageContent) {
+                console.error('关键DOM元素缺失');
             }
         });
     </script>
 </body>
 </html>
+    
