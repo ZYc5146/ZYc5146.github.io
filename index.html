@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="张阳城的个人主页，包含社交平台链接、联系方式及站点说明">
     <title>张阳城的主页</title>
-    <!-- 外部资源 -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 外部资源引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Cloudflare Turnstile 安全验证脚本 -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    
+
     <!-- Tailwind 配置 -->
     <script>
         tailwind.config = {
@@ -22,6 +24,7 @@
                         dark: '#1D2129',
                         light: '#F2F3F5',
                         surface: '#FFFFFF',
+                        'surface-hover': '#F9FAFB',
                         muted: '#6B7280',
                         'muted-light': '#E5E7EB',
                         danger: '#F53F3F'
@@ -29,16 +32,24 @@
                     fontFamily: {
                         inter: ['Inter', 'system-ui', 'sans-serif'],
                     },
+                    boxShadow: {
+                        'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                        'elevation-2': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+                        'elevation-3': '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
+                    }
                 }
             }
         }
     </script>
-    
-    <!-- 自定义样式 -->
+
+    <!-- 自定义工具类与样式 -->
     <style type="text/tailwindcss">
         @layer utilities {
             .content-auto {
                 content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
             .text-gradient {
                 background-clip: text;
@@ -46,74 +57,124 @@
                 color: transparent;
             }
             .transition-custom {
-                transition: all 0.3s ease;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .reveal {
-                opacity: 0;
-                transform: translateY(30px);
-                transition: opacity 0.8s ease, transform 0.8s ease;
+            .hover-scale {
+                @apply hover:scale-105 transition-all duration-300;
             }
-            .reveal.active {
-                opacity: 1;
-                transform: translateY(0);
+            .card-hover {
+                @apply hover:shadow-elevation-3 hover:-translate-y-1 transition-all duration-300;
             }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .skeleton {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: skeleton-loading 1.5s infinite;
+            }
+            .turnstile-container {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px 0;
+            }
+        }
+
+        /* 骨架屏动画 */
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* 滚动显示动画基础样式 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 验证加载动画 */
+        .verification-loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(22, 93, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #165DFF;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-light to-white min-h-screen font-inter text-dark">
-    <!-- 验证覆盖层 -->
-    <div id="verification-overlay" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-4">
+
+<body class="bg-gradient-to-br from-light to-white min-h-screen font-inter text-dark overflow-x-hidden">
+    <!-- 1. Cloudflare Turnstile 验证覆盖层（安全核心，完整保留） -->
+    <div id="verification-overlay" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
         <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-accent mb-8 text-center">
-            <i class="fa fa-shield mr-2"></i>正在验证
+            <i class="fa fa-shield mr-2" aria-hidden="true"></i>正在验证
         </h2>
-        <div class="w-full max-w-xs">
+        <!-- Turnstile 验证容器 -->
+        <div class="turnstile-container">
             <div class="cf-turnstile" 
                  data-sitekey="0x4AAAAAABuY6uMjbtgttvLR" 
                  data-theme="light"
-                 data-callback="onTurnstileSuccess"></div>
+                 data-callback="onTurnstileSuccess"
+                 data-error-callback="onTurnstileError"></div>
         </div>
-        <p class="text-muted text-sm mt-4">请完成验证以继续访问...</p>
-        <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mt-6 hidden" id="verification-spinner"></div>
+        <p class="text-muted text-sm mt-2">请完成验证以继续访问...</p>
+        <!-- 验证加载动画 -->
+        <div class="verification-loading mt-6 hidden" id="verification-spinner" aria-hidden="true"></div>
+        <!-- 错误提示区域 -->
+        <div id="verification-error" class="text-danger text-sm mt-4 hidden"></div>
     </div>
 
-    <!-- 页面实际内容 -->
-    <div class="page-content hidden">
-        <!-- 装饰背景 -->
-        <div class="fixed -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
-        <div class="fixed -bottom-40 -left-40 w-96 h-96 bg-secondary/5 rounded-full blur-3xl"></div>
-        
-        <!-- 导航栏 -->
-        <nav id="navbar" class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-40 transition-all duration-300 py-3">
-            <div class="container mx-auto px-4 flex justify-between items-center">
-                <a href="#" class="text-primary font-bold text-xl">张阳城</a>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#social" class="text-dark/70 hover:text-primary transition-custom">社交平台</a>
-                    <a href="#contact" class="text-dark/70 hover:text-primary transition-custom">联系我</a>
-                    <a href="#web-recommend" class="text-dark/70 hover:text-primary transition-custom">网页推荐</a>
-                    <a href="#about" class="text-dark/70 hover:text-primary transition-custom">关于本站</a>
-                </div>
-                <button id="menu-toggle" class="md:hidden text-dark text-xl">
-                    <i class="fa fa-bars"></i>
-                </button>
-            </div>
-            <!-- 移动端菜单 -->
-            <div id="mobile-menu" class="md:hidden bg-white shadow-lg absolute w-full left-0 top-full transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none">
-                <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
-                    <a href="#social" class="py-2 text-dark/70 hover:text-primary transition-custom">社交平台</a>
-                    <a href="#contact" class="py-2 text-dark/70 hover:text-primary transition-custom">联系我</a>
-                    <a href="#web-recommend" class="py-2 text-dark/70 hover:text-primary transition-custom">网页推荐</a>
-                    <a href="#about" class="py-2 text-dark/70 hover:text-primary transition-custom">关于本站</a>
-                </div>
-            </div>
-        </nav>
+    <!-- 2. 页面实际内容（初始隐藏，验证通过后显示） -->
+    <div class="page-content hidden relative z-10">
+        <!-- 装饰性背景 -->
+        <div class="fixed -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl" aria-hidden="true"></div>
+        <div class="fixed -bottom-40 -left-40 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" aria-hidden="true"></div>
 
-        <!-- 主要内容 -->
-        <main class="container mx-auto px-4 py-24 max-w-5xl relative z-10">
+        <div class="container mx-auto px-4 py-12 max-w-4xl">
+            <!-- 导航栏 -->
+            <nav class="fixed top-0 left-0 right-0 bg-white/80 bg-blur shadow-sm z-40 transition-all duration-300" id="navbar">
+                <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                    <a href="#" class="text-primary font-bold text-xl">张阳城</a>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="#social" class="text-dark/70 hover:text-primary transition-custom">社交平台</a>
+                        <a href="#contact" class="text-dark/70 hover:text-primary transition-custom">联系我</a>
+                        <a href="#about" class="text-dark/70 hover:text-primary transition-custom">关于本站</a>
+                    </div>
+                    <button class="md:hidden text-dark text-xl" id="menu-toggle" aria-label="切换菜单">
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <!-- 移动端菜单 -->
+                <div class="md:hidden bg-white shadow-lg absolute w-full left-0 top-full transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none" id="mobile-menu">
+                    <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                        <a href="#social" class="text-dark/70 hover:text-primary transition-custom py-2">社交平台</a>
+                        <a href="#contact" class="text-dark/70 hover:text-primary transition-custom py-2">联系我</a>
+                        <a href="#about" class="text-dark/70 hover:text-primary transition-custom py-2">关于本站</a>
+                    </div>
+                </div>
+            </nav>
+
             <!-- 头部区域 -->
-            <header class="text-center mb-20 reveal">
-                <div class="inline-block p-2 bg-white rounded-full shadow-md mb-6">
+            <header class="text-center mb-20 pt-24 reveal">
+                <div class="inline-block p-2 bg-white/80 rounded-full shadow-elevation-1 mb-6">
                     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-inner">
-                        <img src="textimg_2025_0716_215025.png" alt="张阳城的个人照片" class="w-full h-full object-cover">
+                        <img src="textimg_2025_0716_215025.png" alt="张阳城的个人照片" class="w-full h-full object-cover" loading="lazy">
                     </div>
                 </div>
                 <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold bg-gradient-to-r from-primary to-secondary text-gradient mb-4">
@@ -128,127 +189,118 @@
             <!-- 社交平台链接 -->
             <section id="social" class="mb-20 scroll-mt-24 reveal">
                 <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-secondary mb-10 text-center">
-                    <i class="fa fa-link mr-2"></i>我的社交平台
+                    <i class="fa fa-link mr-2" aria-hidden="true"></i>我的社交平台
                 </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     <!-- Bilibili -->
-                    <a href="https://space.bilibili.com/360680842" target="_blank" class="bg-surface rounded-xl shadow p-6 flex flex-col items-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <a href="https://space.bilibili.com/360680842" target="_blank" rel="noopener noreferrer" 
+                       class="group bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center text-center">
                         <div class="w-16 h-16 bg-[#FB7299] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-[#FB7299]/20">
-                            <i class="fa fa-play-circle text-white text-2xl"></i>
+                            <i class="fa fa-play-circle text-white text-2xl" aria-hidden="true"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-dark mb-2 group-hover:text-[#FB7299] transition-custom">Bilibili</h3>
-                        <p class="text-sm text-dark/60">点击访问我的B站主页</p>
+                        <h3 class="text-lg font-semibold text-dark group-hover:text-[#FB7299] transition-custom">Bilibili</h3>
+                        <p class="text-sm text-dark/60 mt-2">点击访问我的B站主页</p>
                     </a>
                     
                     <!-- 抖音 -->
-                    <a href="https://www.douyin.com/user/MS4wLjABAAAAdHuuZkF3v6-GeBxREGDv2NlgIHcp7ivnGTIE69QtMPg" target="_blank" class="bg-surface rounded-xl shadow p-6 flex flex-col items-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <a href="https://www.douyin.com/user/MS4wLjABAAAAdHuuZkF3v6-GeBxREGDv2NlgIHcp7ivnGTIE69QtMPg" target="_blank" rel="noopener noreferrer"
+                       class="group bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center text-center">
                         <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mb-4 shadow-lg shadow-black/20">
-                            <i class="fa fa-music text-white text-2xl"></i>
+                            <i class="fa fa-music text-white text-2xl" aria-hidden="true"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-dark mb-2 group-hover:text-black transition-custom">抖音</h3>
-                        <p class="text-sm text-dark/60">点击访问我的抖音主页</p>
+                        <h3 class="text-lg font-semibold text-dark group-hover:text-black transition-custom">抖音</h3>
+                        <p class="text-sm text-dark/60 mt-2">点击访问我的抖音主页</p>
                     </a>
                     
                     <!-- 小红书 -->
-                    <a href="https://www.xiaohongshu.com/user/profile/61a4f8380000000001000a0d6" target="_blank" class="bg-surface rounded-xl shadow p-6 flex flex-col items-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <a href="https://www.xiaohongshu.com/user/profile/61a4f838000000001000a0d6" target="_blank" rel="noopener noreferrer"
+                       class="group bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center text-center">
                         <div class="w-16 h-16 bg-[#FF2442] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-[#FF2442]/20">
-                            <i class="fa fa-camera text-white text-2xl"></i>
+                            <i class="fa fa-camera text-white text-2xl" aria-hidden="true"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-dark mb-2 group-hover:text-[#FF2442] transition-custom">小红书</h3>
-                        <p class="text-sm text-dark/60">点击访问我的小红书主页</p>
+                        <h3 class="text-lg font-semibold text-dark group-hover:text-[#FF2442] transition-custom">小红书</h3>
+                        <p class="text-sm text-dark/60 mt-2">点击访问我的小红书主页</p>
                     </a>
                     
                     <!-- 微博 -->
-                    <a href="https://www.zhangyangcheng.xyz" target="_blank" class="bg-surface rounded-xl shadow p-6 flex flex-col items-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <a href="https://www.zhangyangcheng.xyz" target="_blank" rel="noopener noreferrer"
+                       class="group bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center text-center">
                         <div class="w-16 h-16 bg-[#E6162D] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-[#E6162D]/20">
-                            <i class="fa fa-weibo text-white text-2xl"></i>
+                            <i class="fa fa-weibo text-white text-2xl" aria-hidden="true"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-dark mb-2 group-hover:text-[#E6162D] transition-custom">微博</h3>
-                        <p class="text-sm text-dark/60">点击访问我的微博主页</p>
+                        <h3 class="text-lg font-semibold text-dark group-hover:text-[#E6162D] transition-custom">微博</h3>
+                        <p class="text-sm text-dark/60 mt-2">点击访问我的微博主页</p>
                     </a>
+                    
+                    <!-- 敬请期待 -->
+                    <div class="bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center text-center cursor-not-allowed">
+                        <div class="w-16 h-16 bg-muted-light rounded-full flex items-center justify-center mb-4 shadow-lg">
+                            <i class="fa fa-clock-o text-muted text-2xl" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-muted">敬请期待</h3>
+                        <p class="text-sm text-muted/60 mt-2">更多平台正在筹备中</p>
+                    </div>
                 </div>
             </section>
 
             <!-- 联系信息 -->
             <section id="contact" class="mb-20 scroll-mt-24 reveal">
                 <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-accent mb-10 text-center">
-                    <i class="fa fa-envelope mr-2"></i>联系我
+                    <i class="fa fa-envelope mr-2" aria-hidden="true"></i>联系我
                 </h2>
-                <div class="space-y-6">
+                <div class="space-y-8">
                     <!-- 邮箱卡片 -->
-                    <div class="bg-surface rounded-xl shadow p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="bg-surface rounded-xl shadow-elevation-1 p-8 card-hover">
                         <div class="flex flex-col md:flex-row items-start">
                             <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-4 md:mb-0 md:mr-6 flex-shrink-0">
-                                <i class="fa fa-envelope text-accent text-2xl"></i>
+                                <i class="fa fa-envelope text-accent text-2xl" aria-hidden="true"></i>
                             </div>
                             <div class="w-full">
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-xl font-semibold text-dark">邮箱</h3>
                                     <span class="bg-accent/10 text-accent text-xs px-3 py-1 rounded-full">常用</span>
                                 </div>
-                                <p class="text-dark/70 mb-4">yangcheng001.work@zhangyangcheng.xyz</p>
-                                <button class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-custom flex items-center">
-                                    <i class="fa fa-copy mr-2"></i>复制邮箱
+                                <p class="text-dark/70 mb-4" id="email-text">
+                                    yangcheng001.work@zhangyangcheng.xyz
+                                </p>
+                                <button class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-custom flex items-center" id="copy-email">
+                                    <i class="fa fa-copy mr-2" aria-hidden="true"></i>复制邮箱
                                 </button>
                             </div>
                         </div>
                     </div>
                     
                     <!-- 微信卡片 -->
-                    <div class="bg-surface rounded-xl shadow p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="bg-surface rounded-xl shadow-elevation-1 p-8 card-hover">
                         <div class="flex flex-col md:flex-row items-start">
                             <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-4 md:mb-0 md:mr-6 flex-shrink-0">
-                                <i class="fa fa-wechat text-accent text-2xl"></i>
+                                <i class="fa fa-wechat text-accent text-2xl" aria-hidden="true"></i>
                             </div>
                             <div class="w-full">
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-xl font-semibold text-dark">微信</h3>
                                     <span class="bg-accent/10 text-accent text-xs px-3 py-1 rounded-full">最快</span>
                                 </div>
-                                <p class="text-dark/70 mb-4">lycaonbest（加我请备注来意）</p>
-                                <button class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-custom flex items-center">
-                                    <i class="fa fa-copy mr-2"></i>复制微信号
+                                <p class="text-dark/70 mb-4" id="wechat-text">
+                                    lycaonbest（加我请备注来意）
+                                </p>
+                                <button class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-custom flex items-center" id="copy-wechat">
+                                    <i class="fa fa-copy mr-2" aria-hidden="true"></i>复制微信号
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <!-- 网页推荐 -->
-            <section id="web-recommend" class="mb-20 scroll-mt-24 reveal">
-                <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary mb-10 text-center">
-                    <i class="fa fa-globe mr-2"></i>网页推荐
-                </h2>
-                <div class="space-y-6">
-                    <!-- 第一个推荐卡片 -->
-                    <div class="bg-surface rounded-xl shadow p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                        <div class="flex flex-col md:flex-row items-start">
-                            <div class="w-16 h-16 rounded-full overflow-hidden mb-4 md:mb-0 md:mr-6 flex-shrink-0">
-                                <img src="oxygennotincluded.wiki.gg.ico" alt="缺氧中文Wiki图标" class="w-full h-full object-cover">
-                            </div>
-                            <div class="w-full">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-semibold text-dark">缺氧中文Wiki</h3>
-                                    <a href="https://oxygennotincluded.wiki.gg/zh/" target="_blank" class="text-primary hover:underline">访问</a>
-                                </div>
-                                <p class="text-dark/70">自用的缺氧中文维基，感觉蛮好用的。</p>
-                            </div>
-                        </div>
-                    </div>
                     
-                    <!-- 第二个推荐卡片 -->
-                    <div class="bg-surface rounded-xl shadow p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <!-- 敬请期待（联系方式） -->
+                    <div class="bg-surface rounded-xl shadow-elevation-1 p-8 card-hover">
                         <div class="flex flex-col md:flex-row items-start">
-                            <div class="w-16 h-16 rounded-full overflow-hidden mb-4 md:mb-0 md:mr-6 flex-shrink-0">
-                                <img src="oni-cn.com.ico" alt="缺氧信息查询图标" class="w-full h-full object-cover">
+                            <div class="w-16 h-16 bg-muted-light/50 rounded-full flex items-center justify-center mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                                <i class="fa fa-clock-o text-muted text-2xl" aria-hidden="true"></i>
                             </div>
-                            <div class="w-full">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-semibold text-dark">缺氧信息查询</h3>
-                                    <a href="https://oni-cn.com/entry/home/" target="_blank" class="text-primary hover:underline">访问</a>
-                                </div>
-                                <p class="text-dark/70">含游戏内数据库，且包含汇总功能，方便比较同类型物质的熔沸点等差异。</p>
+                            <div>
+                                <h3 class="text-xl font-semibold text-muted mb-2">更多联系方式</h3>
+                                <p class="text-dark/50 mb-4">更多联系方式正在筹备中，敬请期待</p>
+                                <div class="skeleton h-8 w-32 rounded"></div>
                             </div>
                         </div>
                     </div>
@@ -258,14 +310,14 @@
             <!-- 关于本站 -->
             <section id="about" class="mb-20 scroll-mt-24 reveal">
                 <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary mb-10 text-center">
-                    <i class="fa fa-info-circle mr-2"></i>关于本站
+                    <i class="fa fa-info-circle mr-2" aria-hidden="true"></i>关于本站
                 </h2>
-                <div class="bg-surface rounded-xl shadow p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                <div class="bg-surface rounded-xl shadow-elevation-1 p-8 md:p-10 card-hover">
                     <div class="flex flex-col md:flex-row items-start gap-8">
                         <div class="md:w-1/3">
                             <div class="bg-primary/5 rounded-lg p-6 text-center">
                                 <div class="text-5xl text-primary mb-4">
-                                    <i class="fa fa-globe"></i>
+                                    <i class="fa fa-globe" aria-hidden="true"></i>
                                 </div>
                                 <h3 class="text-xl font-semibold text-dark mb-2">个人域名</h3>
                                 <p class="text-dark/70">zhangyangcheng.xyz</p>
@@ -274,152 +326,238 @@
                         <div class="md:w-2/3">
                             <p class="text-dark/80 mb-6 leading-relaxed">
                                 欢迎访问我的个人主页！这个网站使用了我注册的个人域名 
-                                <a href="http://zhangyangcheng.xyz/" target="_blank" class="text-primary hover:underline">zhangyangcheng.xyz</a>以及GitHub Pages，代码由豆包生成，
-                                旨在为大家提供一个集中了解我的平台。在这里，你可以找到我的社交账号链接，方便关注我的最新动态，
+                                <a href="http://zhangyangcheng.xyz/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">zhangyangcheng.xyz</a> 
+                                及 GitHub Pages 搭建，旨在为大家提供一个集中了解我的平台。在这里，你可以找到我的社交账号链接，方便关注我的最新动态，
                                 也可以通过提供的联系方式与我取得联系。
                             </p>
                             <p class="text-dark/80 leading-relaxed">
                                 感谢你的访问！如果你对网站有任何建议或意见，欢迎通过上述联系方式告知我。
                             </p>
-                            <div class="mt-6 pt-6 border-t border-muted-light/50">
-                                <p class="text-dark/60 text-sm">
-                                    © 2025至今 张阳城的个人主页 - 保留所有权利
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
-        </main>
 
-        <!-- JavaScript -->
-        <script>
-            // DOM元素
-            const overlay = document.getElementById('verification-overlay');
-            const pageContent = document.querySelector('.page-content');
-            const spinner = document.getElementById('verification-spinner');
-            const menuToggle = document.getElementById('menu-toggle');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const navbar = document.getElementById('navbar');
+            <!-- 页脚 -->
+            <footer class="mt-24 text-center text-dark/50 text-sm pb-8 reveal">
+                <div class="flex justify-center space-x-4 mb-4">
+                    <a href="#social" class="hover:text-primary transition-custom" aria-label="社交平台">
+                        <i class="fa fa-link" aria-hidden="true"></i>
+                    </a>
+                    <a href="#contact" class="hover:text-primary transition-custom" aria-label="联系我">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </a>
+                    <a href="#about" class="hover:text-primary transition-custom" aria-label="关于本站">
+                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <p>&copy; 2025 张阳城. 保留所有权利.</p>
+            </footer>
+        </div>
+    </div>
 
-            // 错误处理
-            const errorHandler = {
-                show: (message) => {
-                    let errorDiv = document.getElementById('verification-error');
-                    if (!errorDiv) {
-                        errorDiv = document.createElement('div');
-                        errorDiv.id = 'verification-error';
-                        errorDiv.className = 'text-danger text-sm mt-4';
-                        overlay.appendChild(errorDiv);
-                    }
-                    errorDiv.textContent = `错误: ${message}`;
-                },
-                hide: () => {
-                    const errorDiv = document.getElementById('verification-error');
-                    if (errorDiv) errorDiv.remove();
+    <!-- 3. JavaScript 逻辑（含安全验证、动画交互） -->
+    <script>
+        // ===== 安全验证核心逻辑（完整保留）=====
+        const overlay = document.getElementById('verification-overlay');
+        const pageContent = document.querySelector('.page-content');
+        const spinner = document.getElementById('verification-spinner');
+        const errorEl = document.getElementById('verification-error');
+
+        // 错误提示处理
+        function showError(message) {
+            errorEl.textContent = `错误: ${message}`;
+            errorEl.classList.remove('hidden');
+            // 5秒后自动隐藏错误
+            setTimeout(() => errorEl.classList.add('hidden'), 5000);
+        }
+
+        // Turnstile 验证成功回调（与服务器交互）
+        function onTurnstileSuccess(token) {
+            console.log("Turnstile 验证通过，Token:", token);
+            // 显示加载状态
+            spinner.classList.remove('hidden');
+            errorEl.classList.add('hidden');
+
+            // 发送 Token 到服务器验证（核心安全步骤）
+            fetch("https://worker.zhangyangcheng.xyz", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP 错误: ${res.status}`);
+                return res.json();
+            })
+            .then(result => {
+                spinner.classList.add('hidden');
+                if (result.success) {
+                    // 验证通过：隐藏覆盖层，显示页面
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        pageContent.style.display = 'block';
+                        initPageAnimations(); // 初始化页面动画
+                    }, 500);
+                } else {
+                    // 服务器验证失败
+                    showError(result.error || "验证失败，请重试");
+                    window.turnstile?.reset(); // 重置验证组件
                 }
-            };
+            })
+            .catch(err => {
+                console.error("服务器验证出错:", err);
+                spinner.classList.add('hidden');
+                showError("网络错误，请检查连接后重试");
+                window.turnstile?.reset();
+            });
+        }
 
-            // 验证成功回调
-            function onTurnstileSuccess(token) {
-                console.log("验证成功，token:", token);
-                spinner.classList.remove('hidden');
-                errorHandler.hide();
+        // Turnstile 验证失败回调
+        function onTurnstileError(error) {
+            console.error("Turnstile 验证出错:", error);
+            showError("验证组件加载失败，请刷新页面重试");
+        }
 
-                // 发送验证请求
-                fetch("https://worker.zhangyangcheng.xyz", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ token })
-                })
-                .then(res => res.ok ? res.json() : Promise.reject(`HTTP ${res.status}`))
-                .then(result => {
-                    spinner.classList.add('hidden');
-                    
-                    if (result.success) {
-                        // 显示页面内容
-                        overlay.classList.add('opacity-0');
-                        setTimeout(() => {
-                            overlay.style.display = 'none';
-                            pageContent.style.display = 'block';
-                            revealElements();
-                        }, 500);
-                    } else {
-                        errorHandler.show(result.error || "验证失败，请重试");
-                        window.turnstile?.reset();
-                    }
-                })
-                .catch(err => {
-                    console.error("验证失败:", err);
-                    spinner.classList.add('hidden');
-                    errorHandler.show("网络错误，请检查连接后重试");
-                    window.turnstile?.reset();
-                });
-            }
-
-            // 移动端菜单切换
-            menuToggle.addEventListener('click', () => {
-                const isOpen = mobileMenu.classList.contains('opacity-100');
-                
-                mobileMenu.classList.toggle('opacity-0', isOpen);
-                mobileMenu.classList.toggle('opacity-100', !isOpen);
-                mobileMenu.classList.toggle('-translate-y-full', isOpen);
-                mobileMenu.classList.toggle('translate-y-0', !isOpen);
-                mobileMenu.classList.toggle('pointer-events-none', isOpen);
-                mobileMenu.classList.toggle('pointer-events-auto', !isOpen);
-                
-                menuToggle.innerHTML = isOpen ? 
-                    '<i class="fa fa-bars"></i>' : 
-                    '<i class="fa fa-times"></i>';
+        // ===== 页面动画与交互逻辑 =====
+        function initPageAnimations() {
+            // 1. 导航栏滚动效果
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('py-2', 'shadow-elevation-1');
+                    navbar.classList.remove('py-3', 'shadow-sm');
+                } else {
+                    navbar.classList.add('py-3', 'shadow-sm');
+                    navbar.classList.remove('py-2', 'shadow-elevation-1');
+                }
             });
 
-            // 滚动显示动画
-            function revealElements() {
-                document.querySelectorAll('.reveal').forEach(el => {
-                    if (el.getBoundingClientRect().top < window.innerHeight - 150) {
+            // 2. 移动端菜单切换
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuToggle.addEventListener('click', () => {
+                const isOpen = !mobileMenu.classList.contains('opacity-0');
+                // 切换菜单状态
+                mobileMenu.classList.toggle('opacity-0', isOpen);
+                mobileMenu.classList.toggle('-translate-y-full', isOpen);
+                mobileMenu.classList.toggle('pointer-events-none', isOpen);
+                mobileMenu.classList.toggle('opacity-100', !isOpen);
+                mobileMenu.classList.toggle('translate-y-0', !isOpen);
+                mobileMenu.classList.toggle('pointer-events-auto', !isOpen);
+                // 切换图标
+                menuToggle.innerHTML = isOpen ? 
+                    '<i class="fa fa-bars" aria-hidden="true"></i>' : 
+                    '<i class="fa fa-times" aria-hidden="true"></i>';
+            });
+
+            // 3. 滚动显示动画
+            const revealElements = document.querySelectorAll('.reveal');
+            function checkReveal() {
+                revealElements.forEach(el => {
+                    const windowHeight = window.innerHeight;
+                    const elementTop = el.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    if (elementTop < windowHeight - elementVisible) {
                         el.classList.add('active');
                     }
                 });
             }
-            window.addEventListener('scroll', revealElements);
+            // 初始检查 + 滚动时检查
+            checkReveal();
+            window.addEventListener('scroll', checkReveal);
 
-            // 导航栏滚动效果
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('py-2', 'shadow');
-                    navbar.classList.remove('py-3');
-                } else {
-                    navbar.classList.add('py-3');
-                    navbar.classList.remove('py-2', 'shadow');
-                }
+            // 4. 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // 关闭移动端菜单
+                    if (!mobileMenu.classList.contains('opacity-0')) {
+                        mobileMenu.classList.add('opacity-0', '-translate-y-full', 'pointer-events-none');
+                        menuToggle.innerHTML = '<i class="fa fa-bars" aria-hidden="true"></i>';
+                    }
+                    // 滚动到目标位置
+                    const targetId = anchor.getAttribute('href');
+                    const targetEl = document.querySelector(targetId);
+                    if (targetEl) {
+                        window.scrollTo({
+                            top: targetEl.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
             });
 
-            // 复制功能
-            document.querySelectorAll('button').forEach(btn => {
-                if (btn.innerHTML.includes('复制')) {
-                    btn.addEventListener('click', async () => {
-                        try {
-                            const text = btn.closest('div').querySelector('p').textContent.trim();
-                            await navigator.clipboard.writeText(text);
-                            
-                            const originalHTML = btn.innerHTML;
-                            btn.innerHTML = '<i class="fa fa-check mr-2"></i>已复制';
-                            setTimeout(() => btn.innerHTML = originalHTML, 2000);
-                        } catch (err) {
-                            console.error('复制失败:', err);
-                            alert('复制失败，请手动复制');
-                        }
-                    });
-                }
+            // 5. 复制功能
+            const copyEmailBtn = document.getElementById('copy-email');
+            const copyWechatBtn = document.getElementById('copy-wechat');
+            const emailText = document.getElementById('email-text').textContent.trim();
+            const wechatText = document.getElementById('wechat-text').textContent.trim();
+
+            // 复制邮箱
+            copyEmailBtn.addEventListener('click', async () => {
+                await copyToClipboard(emailText, copyEmailBtn);
+            });
+            // 复制微信号
+            copyWechatBtn.addEventListener('click', async () => {
+                await copyToClipboard(wechatText, copyWechatBtn);
             });
 
-            // 页面加载初始化
-            window.addEventListener('load', () => {
-                if (!overlay || !pageContent) {
-                    console.error('关键DOM元素缺失');
+            // 通用复制函数
+            async function copyToClipboard(text, btn) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    const originalHTML = btn.innerHTML;
+                    // 显示复制成功状态
+                    btn.innerHTML = '<i class="fa fa-check mr-2" aria-hidden="true"></i>已复制';
+                    btn.classList.add('bg-green-500');
+                    // 2秒后恢复原状态
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.classList.remove('bg-green-500');
+                    }, 2000);
+                } catch (err) {
+                    console.error("复制失败:", err);
+                    showToast("复制失败，请手动复制");
                 }
+            }
+
+            // 6. 额外动画效果
+            // "敬请期待" 图标旋转
+            document.querySelectorAll('.cursor-not-allowed').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    el.querySelector('i').classList.add('fa-spin');
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.querySelector('i').classList.remove('fa-spin');
+                });
             });
-        </script>
-    </div>
+
+            // 社交卡片图标弹跳
+            document.querySelectorAll('#social a').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    const icon = card.querySelector('i');
+                    icon.classList.add('fa-bounce');
+                    setTimeout(() => icon.classList.remove('fa-bounce'), 1000);
+                });
+            });
+
+            // 简易提示框
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-dark text-white px-4 py-2 rounded-lg shadow-elevation-2 z-50';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        }
+
+        // 页面加载完成后初始化验证组件状态
+        window.addEventListener('load', () => {
+            if (!overlay || !pageContent) {
+                console.error("安全验证核心元素缺失");
+            }
+        });
+    </script>
 </body>
 </html>
