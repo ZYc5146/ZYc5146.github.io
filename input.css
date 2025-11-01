@@ -1,0 +1,3 @@
+@tailwind base;    /* 基础样式（如默认字体、margin 等） */
+@tailwind components; /* 组件样式（如按钮、卡片等） */
+@tailwind utilities; /* 工具类样式（如颜色、间距、动画等） */

@@ -1,0 +1,16 @@
+{
+  "name": "zyc5146.github.io",
+  "version": "1.0.0",
+  "description": "张阳城的个人主页",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^3.4.18"
+  }
+}
