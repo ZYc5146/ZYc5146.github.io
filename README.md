@@ -3,4 +3,4 @@
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=OthmanAdi/planning-with-files&type=date&legend=top-left)](https://www.star-history.com/#OthmanAdi/planning-with-files&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=ZYc5146/ZYc5146.github.io&type=date&legend=top-left)](https://www.star-history.com/#ZYc5146/ZYc5146.github.io&type=date&legend=top-left)
