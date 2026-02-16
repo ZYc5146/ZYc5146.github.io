@@ -1,6 +1,6 @@
 # ZYc5146.github.io
 
-本项目是 **张阳城 (Yangcheng Zhang)** 的个人主页仓库。通过 **豆包 AI** 协作构建，记录了如何利用 GitHub Actions 实现从代码推送自动化部署到个人域名的全过程。
+本项目是 **张阳城 (ZhangYangcheng)** 的个人主页仓库。通过 **豆包 AI** 协作构建，记录了如何利用 GitHub Actions 实现从代码推送自动化部署到个人域名的全过程。
 
 **🌐 预览地址：[https://zhangyangcheng.xyz](https://zhangyangcheng.xyz)**
 
