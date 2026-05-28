@@ -4,6 +4,8 @@
   "description": "张阳城的个人主页",
   "main": "index.js",
   "scripts": {
+    "build": "tailwindcss -i ./input.css -o ./output.css --minify",
+    "dev": "tailwindcss -i ./input.css -o ./output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
