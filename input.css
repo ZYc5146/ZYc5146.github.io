@@ -1,3 +1,73 @@
-@tailwind base;    /* 基础样式（如默认字体、margin 等） */
-@tailwind components; /* 组件样式（如按钮、卡片等） */
-@tailwind utilities; /* 工具类样式（如颜色、间距、动画等） */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== 鑷畾涔夊伐鍏风被 ===== */
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
+    .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .text-gradient {
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+    .transition-custom {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hover-scale {
+        @apply hover:scale-105 transition-all duration-300;
+    }
+    .card-hover {
+        @apply hover:shadow-elevation-3 hover:-translate-y-1 transition-all duration-300;
+    }
+    .bg-blur {
+        backdrop-filter: blur(8px);
+    }
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+    }
+    .turnstile-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+    }
+}
+
+/* ===== 楠ㄦ灦灞忓姩鐢?===== */
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===== 婊氬姩鏄剧ず鍔ㄧ敾 ===== */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== 楠岃瘉鍔犺浇鍔ㄧ敾 ===== */
+.verification-loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(22, 93, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #165DFF;
+    animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
