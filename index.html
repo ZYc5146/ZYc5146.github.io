@@ -17,7 +17,7 @@
     <!-- 自定义工具类与样式 -->
 </head>
 
-<body class="bg-gradient-to-br from-light to-white min-h-screen font-inter text-dark overflow-x-hidden">
+<body id="top" class="bg-gradient-to-br from-light to-white min-h-screen font-inter text-dark overflow-x-hidden">
     <!-- 1. Cloudflare Turnstile 验证覆盖层（安全核心，完整保留） -->
     <div id="verification-overlay" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
         <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-accent mb-8 text-center">
@@ -50,8 +50,10 @@
                 <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                     <a href="#" class="text-primary font-bold text-xl">张阳城</a>
                     <div class="hidden md:flex space-x-6">
+                        <a href="#top" class="text-dark/70 hover:text-primary transition-custom">主页</a>
                         <a href="#social" class="text-dark/70 hover:text-primary transition-custom">社交平台</a>
                         <a href="#contact" class="text-dark/70 hover:text-primary transition-custom">联系我</a>
+                        <a href="#web-recommend" class="text-dark/70 hover:text-primary transition-custom">网页推荐</a>
                         <a href="#about" class="text-dark/70 hover:text-primary transition-custom">关于本站</a>
                     </div>
                     <button class="md:hidden text-dark text-xl" id="menu-toggle" aria-label="切换菜单">
@@ -61,8 +63,10 @@
                 <!-- 移动端菜单 -->
                 <div class="md:hidden bg-white shadow-lg absolute w-full left-0 top-full transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none" id="mobile-menu">
                     <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                        <a href="#top" class="text-dark/70 hover:text-primary transition-custom py-2">主页</a>
                         <a href="#social" class="text-dark/70 hover:text-primary transition-custom py-2">社交平台</a>
                         <a href="#contact" class="text-dark/70 hover:text-primary transition-custom py-2">联系我</a>
+                        <a href="#web-recommend" class="text-dark/70 hover:text-primary transition-custom py-2">网页推荐</a>
                         <a href="#about" class="text-dark/70 hover:text-primary transition-custom py-2">关于本站</a>
                     </div>
                 </div>
@@ -130,6 +134,16 @@
                         <p class="text-sm text-dark/60 mt-2">点击访问我的微博主页</p>
                     </a>
                     
+                    <!-- GitHub -->
+                    <a href="https://github.com/ZYc5146" target="_blank" rel="noopener noreferrer"
+                       class="group bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-[#333] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-[#333]/20">
+                            <i class="fa fa-github-square text-white text-2xl" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-dark group-hover:text-[#333] transition-custom">GitHub</h3>
+                        <p class="text-sm text-dark/60 mt-2">点击访问我的GitHub主页</p>
+                    </a>
+
                     <!-- 敬请期待 -->
                     <div class="bg-surface rounded-xl shadow-elevation-1 p-6 hover-scale card-hover flex flex-col items-center text-center cursor-not-allowed">
                         <div class="w-16 h-16 bg-muted-light rounded-full flex items-center justify-center mb-4 shadow-lg">
@@ -205,6 +219,42 @@
                 </div>
             </section>
 
+            <!-- 网页推荐 -->
+            <section id="web-recommend" class="mb-20 scroll-mt-24 reveal">
+            <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary mb-10 text-center">
+                <i class="fa fa-globe mr-2" aria-hidden="true"></i>网页推荐
+            </h2>
+            <div class="space-y-8">
+                <div class="bg-surface rounded-xl shadow-elevation-1 p-8 card-hover">
+                    <div class="flex flex-col md:flex-row items-start">
+                        <div class="w-16 h-16 rounded-full overflow-hidden mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                            <img src="oxygennotincluded.wiki.gg.ico" alt="缺氧中文Wiki图标" class="w-full h-full object-cover">
+                        </div>
+                        <div class="w-full">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold text-dark">缺氧中文Wiki</h3>
+                                <a href="https://oxygennotincluded.wiki.gg/zh/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">访问</a>
+                            </div>
+                            <p class="text-dark/70 mb-4">自用的缺氧中文维基，感觉蛮好用的。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface rounded-xl shadow-elevation-1 p-8 card-hover">
+                    <div class="flex flex-col md:flex-row items-start">
+                        <div class="w-16 h-16 rounded-full overflow-hidden mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                            <img src="oni-cn.com.ico" alt="缺氧信息查询图标" class="w-full h-full object-cover">
+                        </div>
+                        <div class="w-full">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold text-dark">缺氧信息查询</h3>
+                                <a href="https://oni-cn.com/entry/home/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">访问</a>
+                            </div>
+                            <p class="text-dark/70 mb-4">含游戏内数据库，且包含汇总功能，方便比较同类型物质的熔沸点等差异。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
             <!-- 关于本站 -->
             <section id="about" class="mb-20 scroll-mt-24 reveal">
                 <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-primary mb-10 text-center">
@@ -231,6 +281,9 @@
                             <p class="text-dark/80 leading-relaxed">
                                 感谢你的访问！如果你对网站有任何建议或意见，欢迎通过上述联系方式告知我。
                             </p>
+                            <p class="text-dark/60 text-sm mt-6 pt-6 border-t border-muted-light/50">
+                                <i class="fa fa-code text-primary mr-2" aria-hidden="true"></i>本站原始代码由豆包生成，经 CodeWhale 上的 DeepSeek 重构优化，使用 Tailwind CSS 构建，通过 GitHub Pages 部署。
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -244,6 +297,9 @@
                     </a>
                     <a href="#contact" class="hover:text-primary transition-custom" aria-label="联系我">
                         <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </a>
+                    <a href="#web-recommend" class="hover:text-primary transition-custom" aria-label="网页推荐">
+                        <i class="fa fa-globe" aria-hidden="true"></i>
                     </a>
                     <a href="#about" class="hover:text-primary transition-custom" aria-label="关于本站">
                         <i class="fa fa-info-circle" aria-hidden="true"></i>
