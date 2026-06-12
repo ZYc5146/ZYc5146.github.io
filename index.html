@@ -10,14 +10,16 @@
     <link rel="stylesheet" href="./assets/css/font-awesome.min.css">
     <!-- 引入本地生成的CSS文件 -->
     <link rel="stylesheet" href="./output.css">  <!-- 新增这一行，路径根据实际文件位置调整 -->
-    <!-- Cloudflare Turnstile 安全验证脚本 -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- ===== Turnstile 已停用（I am Under Attack 接管），恢复时删掉下行注释符号即可 ===== -->
+    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script> -->
 
 
     <!-- 自定义工具类与样式 -->
 </head>
 
 <body id="top" class="bg-gradient-to-br from-light to-white min-h-screen font-inter text-dark overflow-x-hidden">
+    <!-- ===== Turnstile 验证覆盖层 已停用，恢复时删除包裹区 ===== -->
+    <!--
     <!-- 1. Cloudflare Turnstile 验证覆盖层（安全核心，完整保留） -->
     <div id="verification-overlay" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
         <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-accent mb-8 text-center">
@@ -39,7 +41,8 @@
     </div>
 
     <!-- 2. 页面实际内容（初始隐藏，验证通过后显示） -->
-    <div class="page-content hidden relative z-10">
+    -->
+    <div class="page-content relative z-10">
         <!-- 装饰性背景 -->
         <div class="fixed -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl" aria-hidden="true"></div>
         <div class="fixed -bottom-40 -left-40 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" aria-hidden="true"></div>
