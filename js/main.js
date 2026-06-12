@@ -1,3 +1,6 @@
+// ===== Turnstile 代码已停用（I am Under Attack 接管）=====
+// 如需恢复，删除下面这整段注释即可
+/*
 // ===== 安全验证核心逻辑（完整保留）=====
         const overlay = document.getElementById('verification-overlay');
         const pageContent = document.querySelector('.page-content');
@@ -59,6 +62,7 @@
             showError("验证组件加载失败，请刷新页面重试");
         }
 
+*/
         // ===== 页面动画与交互逻辑 =====
         function initPageAnimations() {
             // 1. 导航栏滚动效果
@@ -193,8 +197,14 @@
         }
 
         // 页面加载完成后初始化验证组件状态
-        window.addEventListener('load', () => {
-            if (!overlay || !pageContent) {
-                console.error("安全验证核心元素缺失");
-            }
-        });
+// ===== 原 Turnstile load 监听（已停用）=====
+//         window.addEventListener('load', () => {
+
+// Turnstile 停用后，直接初始化页面动画
+document.addEventListener("DOMContentLoaded", () => {
+    initPageAnimations();
+});
+//             if (!overlay || !pageContent) {
+//                 console.error("安全验证核心元素缺失");
+//             }
+//         });
